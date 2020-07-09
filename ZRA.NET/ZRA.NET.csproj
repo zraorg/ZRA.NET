@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<LangVersion>8.0</LangVersion>
+		<RuntimeIdentifiers>win-x64;osx-x64;linux-x64</RuntimeIdentifiers>
+		<Version>0.0.1-Beta</Version>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageId>ZRA.NET</PackageId>
+		<Title>ZRA.NET</Title>
+		<Description>ZRA.NET is a ZStandard Random Access (ZRA) wrapper library for .NET Standard 2.1, written in C#.</Description>
+		<Authors>Xpl0itR, ZRA Contributors</Authors>
+		<Copyright>Copyright © 2020 ZRA Contributors (https://github.com/zraorg)</Copyright>
+		<PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/zraorg/ZRA.NET</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/zraorg/ZRA.NET</PackageProjectUrl>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="runtimes\$(RuntimeIdentifier)\native\**" Link="\%(Filename)%(Extension)" CopyToOutputDirectory="Always" Condition="'$(RuntimeIdentifier)' != ''" />
+		<None Include="runtimes\*\native\**" Link="\%(Filename)%(Extension)" CopyToOutputDirectory="Always" Condition="'$(RuntimeIdentifier)' == ''" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="runtimes\**" PackagePath="runtimes" Visible="false" />
+    </ItemGroup>
+
+</Project>
