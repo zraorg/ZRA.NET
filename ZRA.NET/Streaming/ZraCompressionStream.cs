@@ -11,6 +11,7 @@ namespace ZRA.NET.Streaming
         public override bool CanRead => false;
         public override bool CanSeek => false;
         public override bool CanWrite => true;
+        public override long Length => _outStream.Length;
         public override long Position { get => _outStream.Position; set => throw new NotSupportedException(); }
 
         private readonly IntPtr _compressor;
@@ -47,24 +48,9 @@ namespace ZRA.NET.Streaming
 
         /**
          * <summary>
-         * Writes the ZRA header to the underlying stream and then clears all buffers for this stream and causes any buffered data to be written to the underlying device.
-         * </summary>
-         */
-        public override void Flush()
-        {
-            byte[] headerBuffer = new byte[_headerLength];
-            LibZra.ZraGetHeaderWithCompressor(_compressor, headerBuffer).ThrowIfError();
-
-            _outStream.Position = _startingPos;
-            _outStream.Write(headerBuffer);
-            _outStream.Flush();
-        }
-
-        /**
-         * <summary>
          * Compresses a sequence of bytes and then writes it to the current stream and advances the current position within this stream by the number of bytes written.
          * </summary>
-         * <remarks>After all the input data is compressed and written, you must call <see cref="Flush"/> to write the ZRA header to the output stream.</remarks>
+         * <remarks>After all the input data is compressed and written, you must call <see cref="Dispose"/> to write the ZRA header to the output stream.</remarks>
          * <param name="buffer">A byte array containing the data to be compressed and written.</param>
          * <param name="offset">The zero-based byte offset in buffer at which to begin compressing bytes and writing them to the current stream.</param>
          * <param name="count">The number of bytes to be compressed and written to the current stream.</param>
@@ -79,8 +65,20 @@ namespace ZRA.NET.Streaming
             _outStream.Write(outputBuffer, 0, (int)outputSize);
         }
 
+        /**
+         * <summary>
+         * Writes the ZRA header to the underlying stream and then releases the unmanaged resources
+         * used by the <see cref="ZraCompressionStream"/> and optionally releases the managed resources.
+         * </summary>
+         */
         protected override void Dispose(bool disposing)
         {
+            byte[] headerBuffer = new byte[_headerLength];
+            LibZra.ZraGetHeaderWithCompressor(_compressor, headerBuffer).ThrowIfError();
+
+            _outStream.Position = _startingPos;
+            _outStream.Write(headerBuffer);
+
             LibZra.ZraDeleteCompressor(_compressor);
 
             if (!_leaveOpen)
@@ -89,8 +87,7 @@ namespace ZRA.NET.Streaming
             base.Dispose(disposing);
         }
 
-        /**<summary>Not Supported.</summary>*/
-        public override long Length => throw new NotSupportedException();
+        public override void Flush() => _outStream.Flush();
 
         /**<summary>Not Supported.</summary>*/
         public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();

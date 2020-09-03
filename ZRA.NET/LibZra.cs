@@ -15,13 +15,13 @@ namespace ZRA.NET
          * The highest version of ZRA the library linked to this supports.
          * </summary>
          */
-        [DllImport("libZRA")] public static extern ushort ZraGetVersion();
+        [DllImport("libzra")] public static extern ushort ZraGetVersion();
 
         /**
          * <param name="status">The status structure that should be described</param>
          * <returns>A pointer to a string describing the error corresponding to the code supplied.</returns>
          */
-        [DllImport("libZRA")] public static extern IntPtr ZraGetErrorString(ZraStatus status);
+        [DllImport("libzra")] public static extern IntPtr ZraGetErrorString(ZraStatus status);
 
         /**
          * <summary>
@@ -44,7 +44,7 @@ namespace ZRA.NET
          * <param name="readFunction">This function is used to read data from the compressed file while supplying the offset and the size, the output should be into the buffer</param>
          * <returns>A <see cref="ZraStatus"/> structure which contains the result code of the completed operation.</returns>
          */
-        [DllImport("libZRA")] public static extern ZraStatus ZraCreateHeader(out IntPtr header, [MarshalAs(UnmanagedType.FunctionPtr)] ReadFunction readFunction);
+        [DllImport("libzra")] public static extern ZraStatus ZraCreateHeader(out IntPtr header, [MarshalAs(UnmanagedType.FunctionPtr)] ReadFunction readFunction);
 
         /**
          * <summary>
@@ -55,43 +55,43 @@ namespace ZRA.NET
          * <param name="size">The size of the entire file in bytes</param>
          * <returns>A <see cref="ZraStatus"/> structure which contains the result code of the completed operation.</returns>
          */
-        [DllImport("libZRA")] public static extern ZraStatus ZraCreateHeader2(out IntPtr header, byte[] buffer, ulong size);
+        [DllImport("libzra")] public static extern ZraStatus ZraCreateHeader2(out IntPtr header, byte[] buffer, ulong size);
 
         /**
          * <param name="header">A pointer to the ZraHeader object</param>
          * <returns>The version of the file with the corresponding header.</returns>
          */
-        [DllImport("libZRA")] public static extern ulong ZraGetVersionWithHeader(IntPtr header);
+        [DllImport("libzra")] public static extern ulong ZraGetVersionWithHeader(IntPtr header);
 
         /**
          * <param name="header">A pointer to the ZraHeader object</param>
          * <returns>The size of the entire header in bytes.</returns>
          */
-        [DllImport("libZRA")] public static extern ulong ZraGetHeaderSizeWithHeader(IntPtr header);
+        [DllImport("libzra")] public static extern ulong ZraGetHeaderSizeWithHeader(IntPtr header);
 
         /**
          * <param name="header">A pointer to the ZraHeader object</param>
          * <returns>The size of the original uncompressed data in bytes.</returns>
          */
-        [DllImport("libZRA")] public static extern ulong ZraGetUncompressedSizeWithHeader(IntPtr header);
+        [DllImport("libzra")] public static extern ulong ZraGetUncompressedSizeWithHeader(IntPtr header);
 
         /**
          * <param name="header">A pointer to the ZraHeader object</param>
          * <returns>The size of a single frame in bytes.</returns>
          */
-        [DllImport("libZRA")] public static extern ulong ZraGetFrameSizeWithHeader(IntPtr header);
+        [DllImport("libzra")] public static extern ulong ZraGetFrameSizeWithHeader(IntPtr header);
 
         /**
          * <param name="header">A pointer to the ZraHeader object</param>
          * <returns>The size of the metadata section in bytes</returns>
          */
-        [DllImport("libZRA")] public static extern ulong ZraGetMetadataSize(IntPtr header);
+        [DllImport("libzra")] public static extern ulong ZraGetMetadataSize(IntPtr header);
 
         /**
          * <param name="header">A pointer to the ZraHeader object</param>
          * <param name="buffer">The buffer into which the metadata section is written into, should be at least <see cref="ZraGetMetadataSize"/> bytes long</param>
          */
-        [DllImport("libZRA")] public static extern void ZraGetMetadata(IntPtr header, byte[] buffer);
+        [DllImport("libzra")] public static extern void ZraGetMetadata(IntPtr header, byte[] buffer);
 
         /**
          * <summary>
@@ -99,7 +99,7 @@ namespace ZRA.NET
          * </summary>
          * <param name="header">A pointer to the ZraHeader object</param>
          */
-        [DllImport("libZRA")] public static extern void ZraDeleteHeader(IntPtr header);
+        [DllImport("libzra")] public static extern void ZraDeleteHeader(IntPtr header);
 
 
         /* ======= In-Memory Functions ======= */
@@ -109,7 +109,7 @@ namespace ZRA.NET
          * <param name="frameSize">The size of a single frame</param>
          * <returns>The worst-case size of the compressed output.</returns>
          */
-        [DllImport("libZRA")] public static extern ulong ZraGetCompressedOutputBufferSize(ulong inputSize, ulong frameSize);
+        [DllImport("libzra")] public static extern ulong ZraGetCompressedOutputBufferSize(ulong inputSize, ulong frameSize);
 
         /**
          * <summary>
@@ -126,7 +126,7 @@ namespace ZRA.NET
          * <param name="metaSize"> The size of the metadata</param>
          * <returns>A <see cref="ZraStatus"/> structure which contains the result code of the completed operation.</returns>
          */
-        [DllImport("libZRA")] public static extern ZraStatus ZraCompressBuffer(byte[] inputBuffer, ulong inputSize, byte[] outputBuffer, out ulong outputSize, byte compressionLevel = 0, uint frameSize = 16384, bool checksum = false, byte[] metaBuffer = null, ulong metaSize = 0);
+        [DllImport("libzra")] public static extern ZraStatus ZraCompressBuffer(byte[] inputBuffer, ulong inputSize, byte[] outputBuffer, out ulong outputSize, byte compressionLevel = 0, uint frameSize = 16384, bool checksum = false, byte[] metaBuffer = null, ulong metaSize = 0);
 
         /**
          * <summary>
@@ -137,7 +137,7 @@ namespace ZRA.NET
          * <param name="outputBuffer"> A pointer to the buffer to write uncompressed data into (Size should be at least <see cref="ZraGetUncompressedSizeWithHeader"/> bytes)</param>
          * <returns>A <see cref="ZraStatus"/> structure which contains the result code of the completed operation.</returns>
          */
-        [DllImport("libZRA")] public static extern ZraStatus ZraDecompressBuffer(byte[] inputBuffer, ulong inputSize, byte[] outputBuffer);
+        [DllImport("libzra")] public static extern ZraStatus ZraDecompressBuffer(byte[] inputBuffer, ulong inputSize, byte[] outputBuffer);
 
         /**
          * <summary>
@@ -150,7 +150,7 @@ namespace ZRA.NET
          * <param name="size"> The amount of bytes to decompress from the supplied offset</param>
          * <returns>A <see cref="ZraStatus"/> structure which contains the result code of the completed operation.</returns>
          */
-        [DllImport("libZRA")] public static extern ZraStatus ZraDecompressRA(byte[] inputBuffer, ulong inputSize, byte[] outputBuffer,  ulong offset, ulong size);
+        [DllImport("libzra")] public static extern ZraStatus ZraDecompressRA(byte[] inputBuffer, ulong inputSize, byte[] outputBuffer,  ulong offset, ulong size);
 
 
         /* ======= Streaming Compressor ======= */
@@ -168,7 +168,7 @@ namespace ZRA.NET
          * <param name="metaSize"> The size of the metadata</param>
          * <returns>A <see cref="ZraStatus"/> structure which contains the result code of the completed operation.</returns>
          */
-        [DllImport("libZRA")] public static extern ZraStatus ZraCreateCompressor(out IntPtr compressor, ulong size, byte compressionLevel = 0, uint frameSize = 16384, bool checksum = false, byte[] metaBuffer = null, ulong metaSize = 0);
+        [DllImport("libzra")] public static extern ZraStatus ZraCreateCompressor(out IntPtr compressor, ulong size, byte compressionLevel = 0, uint frameSize = 16384, bool checksum = false, byte[] metaBuffer = null, ulong metaSize = 0);
 
         /**
          * <summary>
@@ -176,7 +176,7 @@ namespace ZRA.NET
          * </summary>
          * <param name="compressor">A pointer to the ZraCompressor object</param>
          */
-        [DllImport("libZRA")] public static extern void ZraDeleteCompressor(IntPtr compressor);
+        [DllImport("libzra")] public static extern void ZraDeleteCompressor(IntPtr compressor);
 
         /**
          * <param name="compressor"> A pointer to the ZraCompressor object</param>
@@ -184,7 +184,7 @@ namespace ZRA.NET
          * <returns>The worst-case size of the compressed output</returns>
          * <remarks>This is not the same as <see cref="ZraGetCompressedOutputBufferSize"/></remarks>
          */
-        [DllImport("libZRA")] public static extern ulong ZraGetOutputBufferSizeWithCompressor(IntPtr compressor, ulong inputSize);
+        [DllImport("libzra")] public static extern ulong ZraGetOutputBufferSizeWithCompressor(IntPtr compressor, ulong inputSize);
 
         /**
          * <summary>
@@ -197,13 +197,13 @@ namespace ZRA.NET
          * <param name="outputSize"> The size of the compressed output</param>
          * <returns>A <see cref="ZraStatus"/> structure which contains the result code of the completed operation.</returns>
          */
-        [DllImport("libZRA")] public static extern ZraStatus ZraCompressWithCompressor(IntPtr compressor, byte[] inputBuffer, ulong inputSize, byte[] outputBuffer, out ulong outputSize);
+        [DllImport("libzra")] public static extern ZraStatus ZraCompressWithCompressor(IntPtr compressor, byte[] inputBuffer, ulong inputSize, byte[] outputBuffer, out ulong outputSize);
 
         /**
          * <param name="compressor">A pointer to the ZraCompressor object</param>
          * <returns>The size of the full header from the compressor in bytes.</returns>
          */
-        [DllImport("libZRA")] public static extern ulong ZraGetHeaderSizeWithCompressor(IntPtr compressor);
+        [DllImport("libzra")] public static extern ulong ZraGetHeaderSizeWithCompressor(IntPtr compressor);
 
         /**
          * <summary>
@@ -213,7 +213,7 @@ namespace ZRA.NET
          * <param name="outputBuffer">A pointer to the buffer to write the header into (Size should be at least <see cref="ZraGetHeaderSizeWithCompressor"/> bytes)</param>
          * <returns>A <see cref="ZraStatus"/> structure which contains the result code of the completed operation.</returns>
          */
-        [DllImport("libZRA")] public static extern ZraStatus ZraGetHeaderWithCompressor(IntPtr compressor, byte[] outputBuffer);
+        [DllImport("libzra")] public static extern ZraStatus ZraGetHeaderWithCompressor(IntPtr compressor, byte[] outputBuffer);
 
 
         /* ======= Streaming Random-Access Decompressor ======= */
@@ -228,7 +228,7 @@ namespace ZRA.NET
          * <remarks>The cache is to preallocate buffers that are passed into readFunction, so that there isn't constant reallocation.</remarks>
          * <returns>A <see cref="ZraStatus"/> structure which contains the result code of the completed operation.</returns>
          */
-        [DllImport("libZRA")] public static extern ZraStatus ZraCreateDecompressor(out IntPtr decompressor, [MarshalAs(UnmanagedType.FunctionPtr)] ReadFunction readFunction, ulong maxCacheSize = 1024 * 1024 * 20);
+        [DllImport("libzra")] public static extern ZraStatus ZraCreateDecompressor(out IntPtr decompressor, [MarshalAs(UnmanagedType.FunctionPtr)] ReadFunction readFunction, ulong maxCacheSize = 1024 * 1024 * 20);
 
         /**
          * <summary>
@@ -236,14 +236,14 @@ namespace ZRA.NET
          * </summary>
          * <param name="decompressor">A pointer to the ZraDecompressor object</param>
          */
-        [DllImport("libZRA")] public static extern void ZraDeleteDecompressor(IntPtr decompressor);
+        [DllImport("libzra")] public static extern void ZraDeleteDecompressor(IntPtr decompressor);
 
         /**
          * <param name="decompressor">A pointer to the ZraDecompressor object</param>
          * <returns>A pointer to the header object created by the decompressor internally, so that it won't have to be constructed redundantly</returns>
          * <remarks>The lifetime of the object is directly tied to that of the Decompressor, do not manually delete it</remarks>
          */
-        [DllImport("libZRA")] public static extern IntPtr ZraGetHeaderWithDecompressor(IntPtr decompressor);
+        [DllImport("libzra")] public static extern IntPtr ZraGetHeaderWithDecompressor(IntPtr decompressor);
 
         /**
          * <summary>
@@ -255,7 +255,7 @@ namespace ZRA.NET
          * <param name="outputBuffer"> A pointer to the buffer to write the decompressed output into (Size should be adequate)</param>
          * <returns>A <see cref="ZraStatus"/> structure which contains the result code of the completed operation.</returns>
          */
-        [DllImport("libZRA")] public static extern ZraStatus ZraDecompressWithDecompressor(IntPtr decompressor, ulong offset, ulong size, byte[] outputBuffer);
+        [DllImport("libzra")] public static extern ZraStatus ZraDecompressWithDecompressor(IntPtr decompressor, ulong offset, ulong size, byte[] outputBuffer);
 
 
         /* ======= Streaming Full Decompressor ======= */
@@ -268,7 +268,7 @@ namespace ZRA.NET
          * <param name="readFunction"> This function is used to read data from the compressed file while supplying the offset and the size, the output should be into the buffer</param>
          * <returns>A <see cref="ZraStatus"/> structure which contains the result code of the completed operation.</returns>
          */
-        [DllImport("libZRA")] public static extern ZraStatus ZraCreateFullDecompressor(out IntPtr fullDecompressor, [MarshalAs(UnmanagedType.FunctionPtr)] ReadFunction readFunction);
+        [DllImport("libzra")] public static extern ZraStatus ZraCreateFullDecompressor(out IntPtr fullDecompressor, [MarshalAs(UnmanagedType.FunctionPtr)] ReadFunction readFunction);
 
         /**
          * <summary>
@@ -276,14 +276,14 @@ namespace ZRA.NET
          * </summary>
          * <param name="fullDecompressor">A pointer to the ZraFullDecompressor object</param>
          */
-        [DllImport("libZRA")] public static extern void ZraDeleteFullDecompressor(IntPtr fullDecompressor);
+        [DllImport("libzra")] public static extern void ZraDeleteFullDecompressor(IntPtr fullDecompressor);
 
         /**
          * <param name="fullDecompressor">A pointer to the ZraFullDecompressor object</param>
          * <returns>The header object created by the decompressor internally, so that it won't have to be constructed redundantly</returns>
          * <remarks>The lifetime of the object is directly tied to that of the FullDecompressor, do not manually delete it</remarks>
          */
-        [DllImport("libZRA")] public static extern IntPtr ZraGetHeaderWithFullDecompressor(IntPtr fullDecompressor);
+        [DllImport("libzra")] public static extern IntPtr ZraGetHeaderWithFullDecompressor(IntPtr fullDecompressor);
 
         /**
          * <summary>
@@ -294,6 +294,6 @@ namespace ZRA.NET
          * <param name="outputCapacity"> The size of the output buffer, it should be at least <see cref="ZraGetFrameSizeWithHeader"/> bytes</param>
          * <returns>A <see cref="ZraStatus"/> structure which contains the result code of the completed operation.</returns>
          */
-        [DllImport("libZRA")] public static extern ZraStatus ZraDecompressWithFullDecompressor(IntPtr fullDecompressor, byte[] outputBuffer, ulong outputCapacity);
+        [DllImport("libzra")] public static extern ZraStatus ZraDecompressWithFullDecompressor(IntPtr fullDecompressor, byte[] outputBuffer, ulong outputCapacity);
     }
 }

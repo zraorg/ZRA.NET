@@ -22,7 +22,7 @@ See [ZRA#Format](https://github.com/zraorg/ZRA/blob/master/README.md#format) for
   using (ZraCompressionStream compressionStream = new ZraCompressionStream(outStream, (ulong)inStream.Length, compressionLevel: 9, frameSize: 131072))
   {
       inStream.CopyTo(compressionStream);
-      compressionStream.Flush(); // You must call Flush() to write the ZRA header to the output stream.
+      // You must call Dispose() to write the ZRA header to the output stream.
   }
   ```
 #### Decompression (Entire File)
