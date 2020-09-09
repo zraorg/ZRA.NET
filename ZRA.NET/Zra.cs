@@ -38,12 +38,12 @@ namespace ZRA.NET
          */
         public static byte[] Decompress(byte[] inBuffer)
         {
-            LibZra.ZraCreateHeader2(out IntPtr header, inBuffer, (ulong)inBuffer.LongLength).ThrowIfError();
+            LibZra.ZraCreateHeader2(out IntPtr headerPtr, inBuffer, (ulong)inBuffer.LongLength).ThrowIfError();
 
-            byte[] outBuffer = new byte[LibZra.ZraGetUncompressedSizeWithHeader(header)];
+            byte[] outBuffer = new byte[LibZra.ZraGetUncompressedSizeWithHeader(headerPtr)];
             LibZra.ZraDecompressBuffer(inBuffer, (ulong)inBuffer.LongLength, outBuffer).ThrowIfError();
 
-            LibZra.ZraDeleteHeader(header);
+            LibZra.ZraDeleteHeader(headerPtr);
 
             return outBuffer;
         }
@@ -59,22 +59,28 @@ namespace ZRA.NET
          */
         public static byte[] DecompressSection(byte[] inBuffer, ulong offset, ulong length)
         {
-            LibZra.ZraCreateHeader2(out IntPtr header, inBuffer, (ulong)inBuffer.LongLength).ThrowIfError();
+            LibZra.ZraCreateHeader2(out IntPtr headerPtr, inBuffer, (ulong)inBuffer.LongLength).ThrowIfError();
 
-            byte[] outBuffer = new byte[LibZra.ZraGetUncompressedSizeWithHeader(header)];
+            byte[] outBuffer = new byte[LibZra.ZraGetUncompressedSizeWithHeader(headerPtr)];
             LibZra.ZraDecompressRA(inBuffer, (ulong)inBuffer.LongLength, outBuffer, offset, length).ThrowIfError();
 
-            LibZra.ZraDeleteHeader(header);
+            LibZra.ZraDeleteHeader(headerPtr);
 
             return outBuffer;
         }
 
         /**
-         *
+         * <param name="headerPtr"> A pointer to the ZRA header to extract the meta section from</param>
+         * <returns>A byte array containing the ZRA meta section.</returns>
          */
         public static byte[] GetZraMetaSection(IntPtr headerPtr)
         {
-            byte[] metaBuffer = new byte[LibZra.ZraGetMetadataSize(headerPtr)];
+            ulong metaSize = LibZra.ZraGetMetadataSize(headerPtr);
+
+            if (metaSize == 0)
+                return null;
+
+            byte[] metaBuffer = new byte[metaSize];
             LibZra.ZraGetMetadata(headerPtr, metaBuffer);
 
             return metaBuffer;

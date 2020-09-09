@@ -2,6 +2,7 @@
 // Copyright © 2020 ZRA Contributors (https://github.com/zraorg)
 
 using System;
+using System.Buffers;
 using System.IO;
 
 namespace ZRA.NET.Streaming
@@ -59,10 +60,12 @@ namespace ZRA.NET.Streaming
         {
             if (offset > 0) Array.Copy(buffer, offset, buffer, 0, count);
 
-            byte[] outputBuffer = new byte[LibZra.ZraGetOutputBufferSizeWithCompressor(_compressor, (ulong)buffer.LongLength)];
+            byte[] outputBuffer = ArrayPool<byte>.Shared.Rent((int)LibZra.ZraGetOutputBufferSizeWithCompressor(_compressor, (ulong)buffer.LongLength));
             LibZra.ZraCompressWithCompressor(_compressor, buffer, (ulong)count, outputBuffer, out ulong outputSize).ThrowIfError();
 
             _outStream.Write(outputBuffer, 0, (int)outputSize);
+
+            ArrayPool<byte>.Shared.Return(outputBuffer);
         }
 
         /**
@@ -73,12 +76,13 @@ namespace ZRA.NET.Streaming
          */
         protected override void Dispose(bool disposing)
         {
-            byte[] headerBuffer = new byte[_headerLength];
+            byte[] headerBuffer = ArrayPool<byte>.Shared.Rent((int)_headerLength);
             LibZra.ZraGetHeaderWithCompressor(_compressor, headerBuffer).ThrowIfError();
 
             _outStream.Position = _startingPos;
-            _outStream.Write(headerBuffer);
+            _outStream.Write(headerBuffer, 0, (int)_headerLength);
 
+            ArrayPool<byte>.Shared.Return(headerBuffer);
             LibZra.ZraDeleteCompressor(_compressor);
 
             if (!_leaveOpen)

@@ -292,8 +292,9 @@ namespace ZRA.NET
          * <param name="fullDecompressor">A pointer to the ZraFullDecompressor object</param>
          * <param name="outputBuffer"> The buffer to write the decompressed output into</param>
          * <param name="outputCapacity"> The size of the output buffer, it should be at least <see cref="ZraGetFrameSizeWithHeader"/> bytes</param>
+         * <param name="outputSize"> The size of the uncompressed data that has been written into the buffer, this will be 0 at the end of compression</param>
          * <returns>A <see cref="ZraStatus"/> structure which contains the result code of the completed operation.</returns>
          */
-        [DllImport("libzra")] public static extern ZraStatus ZraDecompressWithFullDecompressor(IntPtr fullDecompressor, byte[] outputBuffer, ulong outputCapacity);
+        [DllImport("libzra")] public static extern ZraStatus ZraDecompressWithFullDecompressor(IntPtr fullDecompressor, byte[] outputBuffer, ulong outputCapacity, out ulong outputSize);
     }
 }
