@@ -32,7 +32,7 @@ See [ZRA#Format](https://github.com/zraorg/ZRA/blob/master/README.md#format) for
   ```
 * Streaming
   ```csharp
-  using (ZraDecompressionStream decompressionStream = new ZraDecompressionStream(inStream))
+  using (ZraFullDecompressionStream decompressionStream = new ZraFullDecompressionStream(inStream))
   {
       decompressionStream.CopyTo(outStream);
   }
