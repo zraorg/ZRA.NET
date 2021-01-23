@@ -7,7 +7,7 @@ namespace ZRA.NET
     {
         public ZraStatus ZraStatus { get; }
 
-        public ZraException(ZraStatus zraStatus, string message = null) : base(message)
+        public ZraException(ZraStatus zraStatus) : base(Zra.GetErrorString(zraStatus))
         {
             ZraStatus = zraStatus;
         }

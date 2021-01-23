@@ -70,7 +70,7 @@ namespace zratoolnet
 
             if (compress)
             {
-                using ZraCompressionStream compressionStream = new ZraCompressionStream(outStream, (ulong)inStream.Length, compressionLevel, frameSize);
+                using ZraCompressionStream compressionStream = new ZraCompressionStream(outStream, (ulong)inStream.Length, compressionLevel, frameSize, true);
                 inStream.CopyTo(compressionStream, (int)frameSize);
             }
             else

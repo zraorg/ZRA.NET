@@ -8,6 +8,8 @@ namespace ZRA.NET.Streaming
 {
     public class ZraDecompressionStream : Stream
     {
+        public IntPtr ZraHeader { get; }
+        
         public override bool CanRead => true;
         public override bool CanSeek => true;
         public override bool CanWrite => false;
@@ -15,7 +17,6 @@ namespace ZRA.NET.Streaming
         public override long Position { get; set; }
 
         private readonly IntPtr _decompressor;
-        private readonly IntPtr _header;
         private readonly Stream _baseStream;
         private readonly bool   _leaveOpen;
 
@@ -32,26 +33,20 @@ namespace ZRA.NET.Streaming
          * <remarks>The cache is to preallocate buffers that are passed into readFunction, so that there isn't constant reallocation.</remarks>
          * <returns><see cref="ZraDecompressionStream"/></returns>
          */
-        public ZraDecompressionStream(Stream baseStream, ulong maxCacheSize = 1024 * 1024 * 20, bool leaveOpen = false)
+        public unsafe ZraDecompressionStream(Stream baseStream, ulong maxCacheSize = 1024 * 1024 * 20, bool leaveOpen = false)
         {
-            _baseStream = baseStream;
-            _leaveOpen  = leaveOpen;
-
-            unsafe
+            _baseStream   = baseStream;
+            _leaveOpen    = leaveOpen;
+            _readFunction = (ulong offset, ulong size, byte* buffer) =>
             {
-                _readFunction = (ulong offset, ulong size, byte* buffer) =>
-                {
-                    _baseStream.Seek((long)offset, SeekOrigin.Begin);
-                    _baseStream.Read(new Span<byte>(buffer, (int)size));
-                };
-            }
+                _baseStream.Seek((long)offset, SeekOrigin.Begin);
+                _baseStream.Read(new Span<byte>(buffer, (int)size));
+            };
 
             LibZra.ZraCreateDecompressor(out _decompressor, _readFunction, maxCacheSize).ThrowIfError();
-            _header = LibZra.ZraGetHeaderWithDecompressor(_decompressor);
-            Length = (long)LibZra.ZraGetUncompressedSizeWithHeader(_header);
+            ZraHeader = LibZra.ZraGetHeaderWithDecompressor(_decompressor);
+            Length    = (long)LibZra.ZraGetUncompressedSizeWithHeader(ZraHeader);
         }
-
-        public byte[] GetMetaSection() => Zra.GetZraMetaSection(_header);
 
         /**
          * <summary>
@@ -66,14 +61,44 @@ namespace ZRA.NET.Streaming
          * This can be less than the number of bytes requested if that many bytes are not currently available,
          * or zero (0) if the end of the stream has been reached.</returns>
          */
-        public override int Read(byte[] buffer, int offset, int count)
+        public override int Read(byte[] buffer, int offset, int count) => Read(buffer, offset, count);
+
+        /**
+         * <summary>
+         * Reads a sequence of bytes from the current stream and decompresses it, then advances the position within the stream by the number of bytes read.
+         * </summary>
+         * <param name="buffer">An span of bytes. When this method returns,
+         * the buffer contains the specified byte array with the values between offset and (offset + count - 1)
+         * replaced by the bytes decompressed from the current source.</param>
+         */
+        public override int Read(Span<byte> buffer) => Read(buffer, 0, buffer.Length);
+
+        /**
+         * <summary>
+         * Reads a sequence of bytes from the current stream and decompresses it, then advances the position within the stream by the number of bytes read.
+         * </summary>
+         * <param name="buffer">An span of bytes. When this method returns,
+         * the buffer contains the specified byte array with the values between offset and (offset + count - 1)
+         * replaced by the bytes decompressed from the current source.</param>
+         * <param name="offset">The zero-based byte offset in buffer at which to begin storing the data decompressed from the current stream.</param>
+         * <param name="count">The maximum number of bytes to be read and decompressed from the current stream.</param>
+         * <returns>The total number of bytes read and decompressed into the buffer.
+         * This can be less than the number of bytes requested if that many bytes are not currently available,
+         * or zero (0) if the end of the stream has been reached.</returns>
+         */
+        public unsafe int Read(Span<byte> buffer, int offset, int count)
         {
             long readOffset = Position + offset;
 
             if (readOffset + count > Length)
+            {
                 count = (int)(Length - readOffset);
+            }
 
-            LibZra.ZraDecompressWithDecompressor(_decompressor, (ulong)readOffset, (ulong)count, buffer).ThrowIfError();
+            fixed (byte* bufferPtr = buffer)
+            {
+                LibZra.ZraDecompressWithDecompressor(_decompressor, (ulong)readOffset, (ulong)count, bufferPtr).ThrowIfError();
+            }
 
             Position += count;
             return count;
@@ -103,7 +128,9 @@ namespace ZRA.NET.Streaming
             LibZra.ZraDeleteDecompressor(_decompressor);
 
             if (!_leaveOpen)
+            {
                 _baseStream?.Dispose();
+            }
 
             base.Dispose(disposing);
         }
