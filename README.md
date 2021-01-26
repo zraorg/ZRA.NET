@@ -1,5 +1,5 @@
 <p align="center">
-<b>ZRA.NET</b> is a <b><a href="https://github.com/zraorg/ZRA">ZStandard Random Access</a></b> (ZRA) wrapper library for .NET Standard 2.1, written in C#
+<b>ZRA.NET</b> is a <b><a href="https://github.com/zraorg/ZRA">ZStandard Random Access</a></b> (ZRA) wrapper library for .NET 5.0, written in C#
 <br>
 <b>ZRA</b> allows random access inside an archive compressed using <a href="https://github.com/facebook/zstd">ZStandard</a>
 <br>
